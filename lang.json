@@ -1,0 +1,34 @@
+{
+  "en": {
+    "s": "%d strike(s)",
+    "b": "%d ball(s)",
+    "o": "3 outs!",
+    "startcmd": "start",
+    "rankcmd": "rank",
+    "helpcmd": "help",
+    "help": "http://php-webping.rhcloud.com/psbot/\n/start : Baseball Bot selects a number the player has to solve.\n/rank : Baseball Bot shows you your ranking and fastest score.",
+    "start": "The number you have to solve has been made. Please input 3 digit number.",
+    "already": "There is already the number you have to solve. Please input 3 digit number.",
+    "no": "There is no number you have to solve. Please input \"start\" in order to make a number.",
+    "solve" : "! You have solved the number. It takes %d seconds to solve it.\n\nIf you like this bot, please rate it at http://storebot.me/bot/psbbbot",
+    "wrong" : "You inputted wrongly. Each digit must be different like 123.",
+    "rank" : "%s's fastest score is %d seconds and you rank the top %d.",
+    "norank" : "%s's fastest score doesn't exist."
+  },
+  "kr": {
+    "s": "%d 스트라이크",
+    "b": "%d 볼",
+    "o": "3 아웃!",
+    "startcmd": "시작",
+    "rankcmd": "기록",
+    "helpcmd": "도움",
+    "help": "http://php-webping.rhcloud.com/psbot/\n/시작 : 숫자야구 봇이 내(사용자)가 맞출 3자리의 숫자를 만듭니다.\n/기록 : 최고점수와 순위를 확인합니다.",
+    "start": "문제가 출제되었습니다.세자리 숫자를 입력하세요.",
+    "already": "이미 문제가 출제되어 있습니다. 세자리 숫자를 입력하세요.",
+    "no": "문제가 출제되지 않았습니다. \"시작\"를 입력하여 문제를 출제해 주세요. ",
+    "solve" : "! 정답 입니다. %d초 만에 문제를 푸셨습니다.\n\n숫자야구 봇이 괜찮으시다면, http://storebot.me/bot/psbbbot 에서 평가해주세요.",
+    "wrong" : "잘못 입력하셨습니다. 123과 같이 각 자리수를 다르게 입력하세요.",
+    "rank" : "%s 님의 기록은 %d초이고, 순위는 %d위 입니다.",
+    "norank" : "%s 님의 기록이 아직 없습니다."
+  }
+}
