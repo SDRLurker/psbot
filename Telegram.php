@@ -37,7 +37,8 @@ class Telegram
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_POST, true);
 
-        $curlConfig[CURLOPT_POSTFIELDS] = $array;
+        //$curlConfig[CURLOPT_POSTFIELDS] = $array;
+        $curlConfig[CURLOPT_POSTFIELDS] = http_build_query($array);
         curl_setopt_array($ch, $curlConfig);
 
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
