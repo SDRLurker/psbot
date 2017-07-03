@@ -6,10 +6,11 @@
 
 ## 파일목록
 
-###Telegram.php
-###TelegramException.php
+### Telegram.php
+### TelegramException.php
 
 텔레그램 API를 처리하기 위해 만든 Telegram class가 구현되어 있습니다.
+
 https://github.com/akalongman/php-telegram-bot
 
 위의 소스를 참고하여 작성하였습니다.
