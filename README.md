@@ -1,4 +1,4 @@
-#텔레그램 숫자야구 봇
+# 텔레그램 숫자야구 봇
 
 텔레그램 API를 사용하여 숫자야구 봇을 만들었습니다.
 
@@ -14,15 +14,15 @@ https://github.com/akalongman/php-telegram-bot
 
 위의 소스를 참고하여 작성하였습니다.
 
-###db.php
+### db.php
 
 데이터베이스를 처리하기 위한 변수들을 정의합니다.
 
-###ps.sql
+### ps.sql
 
 숫자야구 봇을 구동하기 위해 필요한 table SQL 파일입니다.
 
-###register.php
+### register.php
 
 텔레그램 봇의 webhook 주소를 설정하기 위해 필요한 파일입니다.
 
