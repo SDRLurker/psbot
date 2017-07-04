@@ -8,6 +8,6 @@ $BOT_NAME = 'psbbbot';
 $telegram = new Telegram($API_KEY, $BOT_NAME);
 $msg = $telegram->getWebhook();
 
-$game = new Baseball($msg, $telegram);
+$game = new Baseball($telegram);
 $game->process();
 ?>

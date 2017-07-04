@@ -2,9 +2,7 @@
 class Baseball
 {
     protected $version = '0.1.0';
-
-    protected $user_msg;
-    protected $telegram;
+    protected $messenger;
 
     protected $translations;
     protected $conn;
@@ -13,14 +11,11 @@ class Baseball
     protected $is_echo;
 
     /** Constructor
-     *
-     * @param string $user_msg : decoded JSON from Telegram
-     * @param class  $telegram : Telegram Object
+     * @param class  $messenger : Telegram or KaKao Object
      */
-    public function __construct($user_msg, $telegram, $is_echo = false) {
+    public function __construct($messenger, $is_echo = false) {
         include 'db.php';
-        $this->user_msg = $user_msg;
-        $this->telegram = $telegram;
+        $this->messenger = $messenger;
 
         $this->is_echo = $is_echo;
         $this->language = 'en';
@@ -36,15 +31,15 @@ class Baseball
     }
 
     private function chat_id() {
-        return $this->user_msg->{'message'}->{'chat'}->{'id'};
+        return $this->messenger->chat_id();
     }
     private function chat_name() {
-        return $this->user_msg->{'message'}->{'chat'}->{'first_name'};
+        return $this->messenger->chat_name();
     }
     private function text() {
-        return $this->user_msg->{'message'}->{'text'};
+        return $this->messenger->text();
     }
-    
+
     private function translation($nation, $field) {
         return $this->translations->{$nation}->{$field};
     }
@@ -52,8 +47,8 @@ class Baseball
     private function sendText($text){
         if($this->is_echo == true)
             echo $text;
-        else   
-            $this->telegram->sendMessage($this->chat_id(), $text);
+        else
+            $this->messenger->sendMessage($this->chat_id(), $text);
     }
 
     private function proc_language($cmd) {
@@ -74,7 +69,7 @@ class Baseball
     private function start($pstbl) {
         $bot_msgs = $this->proc_language('startcmd');
 
-        // The bot makes the secret number. 
+        // The bot makes the secret number.
         $now = microtime();
         $timestamps = explode(" ", $now);
         $timestamp = (double)$timestamps[0] + (double)$timestamps[1];
@@ -100,7 +95,7 @@ class Baseball
             $que_num = $que_num + (pow(10,$i) * $digits[$i]);
 
         // The bot inserts or updates the user's game info.
-        if(empty($pstbl)) 
+        if(empty($pstbl))
         {
             $query = "INSERT INTO ps (id, que_num, start, nation) VALUES (?,?,?,?)";
             $stmt = $this->conn->prepare($query);
@@ -110,7 +105,7 @@ class Baseball
         {
             if($pstbl['start'] != NULL)
             {
-                $this->sendText($bot_msgs->{'already'}); 
+                $this->sendText($bot_msgs->{'already'});
                 return;
             }
             else
@@ -124,17 +119,17 @@ class Baseball
         $stmt->close();
         if (!$result) die ($query."<br>UPDATE or INSERT que_num failed: " . $this->conn->error);
 
-        $this->sendText($bot_msgs->{'start'}); 
+        $this->sendText($bot_msgs->{'start'});
     }
     private function rank($pstbl) {
         $bot_msgs = $this->proc_language('rankcmd');
 
         // The bot searchs for the player's ranking.
-        if(empty($pstbl)) 
+        if(empty($pstbl))
         {
             $answer = sprintf($bot_msgs->{'norank'}, $this->chat_name());
         }
-        else 
+        else
         {
             if($pstbl['record'] != NULL)
             {
@@ -142,7 +137,7 @@ class Baseball
                 $stmt = $this->conn->prepare($query);
                 $stmt->bind_param("s", $pstbl['record']);
                 $result = $stmt->execute();
-                if (!$result) {  $stmt->close(); die ("SELECT count(*) failed: " . $this->conn->error); } 
+                if (!$result) {  $stmt->close(); die ("SELECT count(*) failed: " . $this->conn->error); }
                 $result = $stmt->get_result(); $stmt->close();
                 $row = $result->fetch_array(MYSQLI_NUM);
                 $ranking = (int)$row[0]+ 1;
@@ -154,12 +149,12 @@ class Baseball
             }
         }
 
-        $this->sendText($answer); 
+        $this->sendText($answer);
     }
     private function check_number($pstbl) {
-        if(empty($pstbl)) 
+        if(empty($pstbl))
             $bot_msgs = $this->translations->{'en'};
-        else   
+        else
             $bot_msgs = $this->translations->{$pstbl['nation']};
 
         // The bot checks the validations of the player's number.
@@ -172,15 +167,15 @@ class Baseball
             for($j=$i+1;$j<3;$j++) {
                 if($this->text()[$i] == $this->text()[$j]) {
                     $valid = 0;
-                    break;  
+                    break;
                 }
             }
         }
 
         if($valid == 1)
-        {     
-            $question = 1;    
-            if(empty($pstbl)) 
+        {
+            $question = 1;
+            if(empty($pstbl))
             {
                 $question = 0;
             }
@@ -189,8 +184,8 @@ class Baseball
                 if($pstbl['que_num'] == NULL)
                     $question = 0;
                 else
-                    $que_num = $pstbl['que_num'];                                
-            }  
+                    $que_num = $pstbl['que_num'];
+            }
             if($question == 0)
             {
                 $this->sendText($bot_msgs->{'no'});
@@ -249,9 +244,10 @@ class Baseball
     private function help($pstbl) {
         $bot_msgs = $this->proc_language('helpcmd');
         $this->sendText($bot_msgs->{'help'});
-    }	
+    }
 
     public function process() {
+        $text = $this->text();
         $query = "SELECT id, start, que_num, record, nation FROM ps WHERE id=?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("s", $this->chat_id());
@@ -265,31 +261,28 @@ class Baseball
         switch($this->text()) {
             case '/'.$this->translation('kr','startcmd'):
             case '/'.$this->translation('en','startcmd'):
-                $this->user_msg->{'message'}->{'text'} = 
-                    substr($this->text(), 1);
+                $text = substr($text, 1);
             case $this->translation('kr','startcmd'):
             case $this->translation('en','startcmd'):
-                $this->start($row); 
-                break;  
+                $this->start($row);
+                break;
 
             case '/'.$this->translation('kr','rankcmd'):
             case '/'.$this->translation('en','rankcmd'):
-                $this->user_msg->{'message'}->{'text'} = 
-                    substr($this->text(), 1);
+                $text = substr($text, 1);
             case $this->translation('kr','rankcmd'):
             case $this->translation('en','rankcmd'):
-                $this->rank($row); 
-                break; 
+                $this->rank($row);
+                break;
             case '/'.$this->translation('kr','helpcmd'):
             case '/'.$this->translation('en','helpcmd'):
-                $this->user_msg->{'message'}->{'text'} = 
-                    substr($this->text(), 1);
+                $text = substr($text, 1);
             case $this->translation('kr','helpcmd'):
             case $this->translation('en','helpcmd'):
-                $this->help($row); 
-                break; 
+                $this->help($row);
+                break;
         }
-        if(strlen($this->text()) == 3 && intval($this->text()) != 0)
+        if(strlen($text) == 3 && intval($text) != 0)
         {
             $this->check_number($row);
         }

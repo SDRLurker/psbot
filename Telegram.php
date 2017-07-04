@@ -3,10 +3,14 @@ include 'TelegramException.php';
 class Telegram
 {
     protected $version = '0.1.0';
-    protected $api_key = '';	
+    protected $api_key = '';
     protected $bot_name = '';
 
-    protected $BASE_URL = '';	
+    protected $BASE_URL = '';
+
+    protected $chat_id;
+    protected $chat_name;
+    protected $text;
 
     /** Constructor
      *
@@ -24,9 +28,9 @@ class Telegram
         $this->api_key = $api_key;
         $this->bot_name = $bot_name;
 
-	$this->BASE_URL = 'https://api.telegram.org/bot'.$api_key.'/';
+        $this->BASE_URL = 'https://api.telegram.org/bot'.$api_key.'/';
     }
-	
+
     private function setCommand($com, $array)
     {
         $url = $this->BASE_URL.$com;
@@ -37,7 +41,6 @@ class Telegram
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_POST, true);
 
-        //$curlConfig[CURLOPT_POSTFIELDS] = $array;
         $curlConfig[CURLOPT_POSTFIELDS] = http_build_query($array);
         curl_setopt_array($ch, $curlConfig);
 
@@ -45,23 +48,41 @@ class Telegram
         $result = curl_exec($ch);
 
         curl_close($ch);
-        return array('status' => $status, 
+        return array('status' => $status,
             'result' => $result);
     }
     public function setWebhook($url)
     {
         $result = $this->setCommand("setWebhook", array('url' => $url));
-	return $result;
+        return $result;
     }
     public function sendMessage($chat_id, $text)
     {
-        $result = $this->setCommand("sendMessage", 
+        $result = $this->setCommand("sendMessage",
             array('chat_id' => $chat_id, 'text' => $text));
-	return $result;
+        return $result;
     }
-    public function getWebhook()	
+    public function getWebhook()
     {
-        $json = file_get_contents('php://input');
-        return json_decode($json);
+        $json_str = file_get_contents('php://input');
+        $json = json_decode($json_str);
+
+        $this->chat_id = $json->{'message'}->{'chat'}->{'id'};
+        $this->chat_name = $json->{'message'}->{'chat'}->{'first_name'};
+        $this->text = $json->{'message'}->{'text'};
+
+        return $json;
+    }
+    public function chat_id()
+    {
+        return $this->chat_id;
+    }
+    public function chat_name()
+    {
+        return $this->chat_name;
+    }
+    public function text()
+    {
+        return $this->text;
     }
 }
