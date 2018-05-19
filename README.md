@@ -2,7 +2,7 @@
 
 텔레그램 API를 사용하여 숫자야구 봇을 만들었습니다.
 
-숫자야구 봇 매뉴얼 설명 : http://php-webping.rhcloud.com/psbot/
+숫자야구 봇 매뉴얼 설명 : http://psbbbot.herokuapp.com/psbot/
 
 ## 파일목록
 
